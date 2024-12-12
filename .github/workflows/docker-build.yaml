@@ -55,6 +55,10 @@ jobs:
       run: |
         echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
+    - name: List files in bazel build
+      run: |
+        ls ./bazel-bin/examples/cpp/helloworld/
+
 
     - name: Build Docker Image
       run: |
