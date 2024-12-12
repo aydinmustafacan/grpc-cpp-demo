@@ -1,0 +1,85 @@
+name: Docker Build Server
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+    - main2
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  test:
+    name: Docker Build Server
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code into the repo  directory
+      uses: actions/checkout@v2
+
+    - name: Cache Bazel Build
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/bazel
+        key: bazel-cache-Linux-${{ runner.os }}-${{ hashFiles('WORKSPACE', 'BUILD', '**/*.bzl') }}
+        restore-keys: |
+          bazel-cache-Linux-${{ runner.os }}-
+          bazel-cache-Linux-
+
+    - name: Install bazel
+      run: |
+        wget  https://github.com/bazelbuild/bazel/releases/download/6.1.1/bazel-6.1.1-installer-linux-x86_64.sh
+        sudo bash bazel-6.1.1-installer-linux-x86_64.sh
+
+    - name: Which Bazel
+      run: |
+        which bazel
+        bazel version
+
+    - name: GCC version
+      run: |
+          gcc --version
+          g++ --version
+
+    - name: Run bazel build
+      run: |
+          bazel build //examples/cpp/helloworld:greeter_server
+
+    - name: Log in to Docker Hub
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+
+    - name: List files in bazel build
+      run: |
+        ls ./bazel-bin/examples/cpp/helloworld/
+
+
+    - name: Build Docker Image
+      run: |
+        cp bazel-bin/examples/cpp/helloworld/greeter_server .
+        docker build -t my-docker-grpc-server:latest .
+
+    - name: Docker Image List
+      run: |
+        docker images
+
+    - name: Tag Docker Image
+      run: |
+        docker tag my-docker-grpc-server:latest ${{ secrets.DOCKER_USERNAME }}/my-docker-grpc-server:latest
+
+    - name: Push Docker Image
+      run: |
+        docker push ${{ secrets.DOCKER_USERNAME }}/my-docker-grpc-server:latest
+
+    - name: Docker Image List(Again)
+      run: |
+        docker images
+      
+

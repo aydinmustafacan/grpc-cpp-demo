@@ -1,4 +1,4 @@
-name: Docker Build
+name: Docker Build Client
 
 on:
   push:
@@ -14,7 +14,7 @@ on:
 
 jobs:
   test:
-    name: Docker Build
+    name: Docker Build Client
     runs-on: ubuntu-latest
 
     steps:
@@ -25,9 +25,10 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.cache/bazel
-        key: bazel-cache-${{ runner.os }}-${{ hashFiles('**/*') }}
+        key: bazel-cache-Linux-${{ runner.os }}-${{ hashFiles('WORKSPACE', 'BUILD', '**/*.bzl') }}
         restore-keys: |
-          bazel-cache-${{ runner.os }}-
+          bazel-cache-Linux-${{ runner.os }}-
+          bazel-cache-Linux-
 
     - name: Install bazel
       run: |
@@ -46,7 +47,7 @@ jobs:
 
     - name: Run bazel build
       run: |
-          bazel build //examples/cpp/helloworld:greeter_server
+          bazel build //examples/cpp/helloworld:greeter_client
 
     - name: Log in to Docker Hub
       env:
@@ -62,8 +63,8 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        cp bazel-bin/examples/cpp/helloworld/greeter_server .
-        docker build -t my-docker-grpc-server:latest .
+        cp bazel-bin/examples/cpp/helloworld/greeter_client .
+        docker build -t my-docker-grpc-client:latest .
 
     - name: Docker Image List
       run: |
@@ -71,13 +72,13 @@ jobs:
 
     - name: Tag Docker Image
       run: |
-        docker tag my-docker-grpc-server:latest ${{ secrets.DOCKER_USERNAME }}/my-docker-grpc-server:latest
+        docker tag my-docker-grpc-client:latest ${{ secrets.DOCKER_USERNAME }}/my-docker-grpc-client:latest
 
     - name: Push Docker Image
       run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/my-docker-grpc-server:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/my-docker-grpc-client:latest
 
-    - name: Docker Image List(Again)
+    - name: Docker Image List (Again)
       run: |
         docker images
       
