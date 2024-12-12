@@ -48,7 +48,7 @@ jobs:
 
     - name: Tag Docker Image
       run: |
-        docker tag my-docker-image:latest ${{ secrets.DOCKER_USERNAME }}/my-docker-grpc-server:latest
+        docker tag my-docker-grpc-server:latest ${{ secrets.DOCKER_USERNAME }}/my-docker-grpc-server:latest
 
     - name: Push Docker Image
       run: |
