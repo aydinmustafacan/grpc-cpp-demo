@@ -20,6 +20,15 @@ jobs:
     steps:
     - name: Check out code into the repo  directory
       uses: actions/checkout@v2
+
+    - name: Cache Bazel Build
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/bazel
+        key: bazel-cache-${{ runner.os }}-${{ hashFiles('**/*') }}
+        restore-keys: |
+          bazel-cache-${{ runner.os }}-
+
     - name: Install bazel
       run: |
         wget  https://github.com/bazelbuild/bazel/releases/download/6.1.1/bazel-6.1.1-installer-linux-x86_64.sh
@@ -29,6 +38,15 @@ jobs:
       run: |
         which bazel
         bazel version
+
+    - name: GCC version
+      run: |
+          gcc --version
+          g++ --version
+
+    - name: Run bazel build
+      run: |
+          bazel build //examples/cpp/helloworld:greeter_server
 
     - name: Log in to Docker Hub
       env:
