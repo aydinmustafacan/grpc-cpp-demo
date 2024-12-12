@@ -1,7 +1,16 @@
-name: ci
+name: Docker Build
 
-on: 
-  push
+on:
+  push:
+    branches:
+      - main2
+  pull_request:
+    branches:
+    - main2
+    types:
+      - opened
+      - reopened
+      - synchronize
 
 jobs:
   test:
@@ -20,11 +29,6 @@ jobs:
       run: |
         which bazel
         bazel version
-
-    - name: GCC version
-      run: |
-          gcc --version
-          g++ --version
 
     - name: Run bazel build
       run:
