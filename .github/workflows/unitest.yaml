@@ -28,4 +28,4 @@ jobs:
 
     - name: Run bazel build
       run:
-        bazel build //examples/cpp/helloworld:all
+        bazel build //examples/cpp/helloworld:greeter_server
