@@ -42,7 +42,7 @@ RUN bazel build //examples/cpp/helloworld:greeter_server --verbose_failures
 FROM --platform=linux/amd64 ubuntu:22.04 AS runtime
 
 # Copy the compiled binary from the build stage
-COPY --from=build /app/bazel-bin/greeter_server /usr/local/bin/greeter_server
+COPY --from=build /app/bazel-bin/examples/cpp/helloworld/greeter_server /usr/local/bin/greeter_server
 
 # Set default command to run the binary
 CMD ["/usr/local/bin/greeter_server"]

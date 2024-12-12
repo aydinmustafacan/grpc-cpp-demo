@@ -57,7 +57,7 @@ class GreeterServiceImpl final : public Greeter::Service {
 void RunServer(uint16_t port) {
   // host.docker.internal
   // 0.0.0.0
-  std::string server_address = absl::StrFormat("host.docker.internal:%d", port);
+  std::string server_address = absl::StrFormat("0.0.0.0:%d", port);
   GreeterServiceImpl service;
 
   grpc::EnableDefaultHealthCheckService(true);
