@@ -64,7 +64,7 @@ jobs:
     - name: Build Docker Image
       run: |
         cp bazel-bin/examples/cpp/helloworld/greeter_client .
-        docker build -t my-docker-grpc-client:latest .
+        docker build -t my-docker-grpc-client:latest -f Dockerfile.client .
 
     - name: Docker Image List
       run: |

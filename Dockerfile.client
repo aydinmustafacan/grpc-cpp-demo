@@ -1,0 +1,6 @@
+FROM ubuntu:22.04
+
+# Copy pre-built binary from the host
+COPY ./greeter_client /usr/local/bin/greeter_client
+
+CMD ["/usr/local/bin/greeter_client"]
